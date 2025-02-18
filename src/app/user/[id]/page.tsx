@@ -1,6 +1,3 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 
@@ -15,54 +12,22 @@ interface User {
   group_name: string;
 }
 
-export default function UserDetailPage({ params }: UserDetailPageProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null);
-
-  // ユーザデータを取得する関数
-  const fetchUser = useCallback(async () => {
-    if (!resolvedParams) return;
-
-    try {
-      const response = await fetch(`http://localhost:8070/api/user/${resolvedParams.id}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+export default async function UserDetailPage({ params }: UserDetailPageProps) {
+  const { id } = await params;
+    const response = await fetch(`${process.env.API_URL}/api/user/${id}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
         }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      setUser({
-        id: data.user_id,
-        name: data.user_name, 
-        login_id: data.login_id,
-        group_name: data.group_name
-      });
-    } catch (error) {
-      console.error('Error fetching user data:', error);
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error status: ${response.status}`);
     }
-  }, [resolvedParams]);
 
-  // ユーザIDを取得
-  useEffect(() => {
-    const resolveParams = async () => {
-      const resolved = await params;
-      setResolvedParams(resolved);
-    };
-
-    resolveParams();
-  }, [params]);
-
-  // ユーザデータを取得
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    const user : User = await response.json();
 
   return (
     <div className="container mx-auto p-4">
