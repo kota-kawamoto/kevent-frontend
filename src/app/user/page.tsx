@@ -54,7 +54,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
           </Link>
         )}
         
-        {Array.from({ length: result.last_page }, 
+        {Array.from({ length: result.last_page },
         function(_, i) {
           return i + 1;
         })
@@ -102,10 +102,15 @@ export default async function UserListPage({ searchParams }: PageProps) {
               <td className="py-3 px-4">{user.user_id}</td>
               <td className="py-3 px-4">{user.user_name}</td>
               <td className="py-3 px-4">{user.group.group_name}</td>
-              <td className="py-3 px-4">
+              <td className="py-3 px-4 space-x-2">
                 <Link href={`/user/${user.user_id}`}>
                   <Button className="bg-blue-500 text-white hover:bg-blue-800">
                     詳細
+                  </Button>
+                </Link>
+                <Link href={`/user/${user.user_id}/edit`}>
+                  <Button className="bg-green-500 text-white hover:bg-green-700">
+                    編集
                   </Button>
                 </Link>
               </td>
