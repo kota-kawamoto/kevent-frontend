@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from './DeleteButton';
 
 interface UserDetailPageProps {
   params: Promise<{ id: string }>;
@@ -27,7 +28,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
       throw new Error(`HTTP error status: ${response.status}`);
     }
 
-    const user : User = await response.json();
+  const user: User = await response.json();
 
   return (
     <div className="container mx-auto p-4">
@@ -63,9 +64,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         <Link href={`/user/${user?.id}/edit`}>
           <Button className="bg-blue-500 text-white">編集</Button>
         </Link>
-        {/* <Link href='#' onClick={deleteUser}> */}
-          <Button className="bg-red-500 text-white">削除</Button>
-        {/* </Link> */}
+        <DeleteButton userId={user.id} />
       </div>
     </div>
   );
