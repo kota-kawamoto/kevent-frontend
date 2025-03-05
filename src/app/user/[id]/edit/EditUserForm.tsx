@@ -60,7 +60,7 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="bg-white shadow rounded-lg overflow-hidden p-6 space-y-4">
+      <div className="bg-white shadow rounded-lg overflow-hidden p-6 space-y-4 max-w-2xl mx-auto">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             氏名
@@ -94,9 +94,9 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
           <select
             id="group_id"
             name="group_id"
-          /* 初期値はuserから取得を行う */
+            /* 初期値はuserから取得を行う */
             defaultValue={user.group_id}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white py-2 pl-3 pr-10 text-gray-900 cursor-pointer"
           >
             {groups.map((group) => (
               <option key={group.group_id} value={group.group_id}>
@@ -107,7 +107,7 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
         </div>
       </div>
 
-      <div className="flex space-x-4 mt-6">
+      <div className="flex space-x-4 mt-6 max-w-2xl mx-auto">
         <Link href={`/user/${user.id}`}>
           <Button type="button" className="bg-gray-200 text-gray-800">
             キャンセル
