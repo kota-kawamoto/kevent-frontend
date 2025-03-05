@@ -118,6 +118,9 @@ export default async function UserListPage({ searchParams }: PageProps) {
           ))}
         </tbody>
       </table>
+      <Link href="/user/create" className="mt-6 block">
+        <Button className="bg-blue-500 text-white hover:bg-blue-800">新規ユーザ登録</Button>
+      </Link>
       <Pagination />
     </div>
   );
