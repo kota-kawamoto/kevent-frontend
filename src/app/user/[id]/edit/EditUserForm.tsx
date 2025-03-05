@@ -22,6 +22,12 @@ interface EditUserFormProps {
   groups: Group[];
 }
 
+interface ValidationErrors {
+  errors: {
+    [key: string]: string[];
+  };
+}
+
 // ユーザー編集画面のフォーム
 export function EditUserForm({ user, groups }: EditUserFormProps) {
   const router = useRouter();
@@ -46,15 +52,23 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error('Error response:', errorData);
-        throw new Error(`HTTP error status: ${response.status}`);
+        const errorData: ValidationErrors = await response.json();
+        if (errorData.errors) {
+          // バリデーションエラーメッセージを整形して表示
+          const errorMessages = Object.values(errorData.errors)
+            .flat()
+            .join('\n');
+          alert(errorMessages);
+        } else {
+          throw new Error(`HTTP error status: ${response.status}`);
+        }
+        return;
       }
 
       router.push(`/user/${user.id}`);
-    } catch (error) {
-      console.error('Error updating user:', error);
-      alert('ユーザー情報の更新に失敗しました。');
+    } catch (e) {
+      console.error('Error updating user:', e);
+      alert('ユーザ情報の更新に失敗しました');
     }
   };
 
@@ -119,4 +133,4 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
       </div>
     </form>
   );
-} 
+}
