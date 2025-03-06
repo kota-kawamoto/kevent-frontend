@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from './[id]/DeleteButton';
 
 interface User {
   user_id: string;
@@ -113,6 +114,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
                     編集
                   </Button>
                 </Link>
+                <DeleteButton userId={user.user_id} />
               </td>
             </tr>
           ))}

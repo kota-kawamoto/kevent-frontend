@@ -2,13 +2,6 @@ import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getGroups } from '../lib/getGroups';
-import { revalidatePath } from 'next/cache';
-
-interface ValidationErrors {
-  errors: {
-    [key: string]: string[];
-  };
-}
 
 // 新規ユーザー登録画面
 export default async function CreateUserPage() {
@@ -38,19 +31,10 @@ export default async function CreateUserPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        if (response.status === 422) {
-          // バリデーションエラーの場合
-          const validationErrors = data as ValidationErrors;
-          const errorMessage = Object.values(validationErrors.errors)
-            .flat()
-            .join('\n');
-          throw new Error(errorMessage);
-        }
         throw new Error(data.message || `エラーが発生しました (${response.status})`);
       }
-
-      revalidatePath('/user');
       redirect('/user');
+
     } catch (error) {
       console.error('作成エラー:', error);
       throw error instanceof Error ? error : new Error('ユーザーの作成に失敗しました');
