@@ -87,8 +87,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
 
   return (
     <div className="container mx-auto p-3">
-      <h1 className="text-3xl font-bold mb-6">ユーザー一覧</h1>
-      <table className="min-w-full bg-white shadow-md rounded">
+      <table className="min-w-full bg-white shadow-md rounded mt-6">
         <thead>
           <tr className="bg-gray-100 border-b">
             <th className="text-left py-3 px-4 uppercase font-semibold text-sm">ID</th>
