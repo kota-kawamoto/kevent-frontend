@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getGroups } from '../lib/getGroups';
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // 新規ユーザー登録画面
 export default async function CreateUserPage() {
@@ -55,50 +57,45 @@ export default async function CreateUserPage() {
             <label className="block text-sm font-medium text-gray-700">
               氏名
             </label>
-            <input
-              type="text"
+            <Input
               name="user_name"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               ログインID
             </label>
-            <input
-              type="text"
+            <Input
               name="login_id"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               パスワード
             </label>
-            <input
+            <Input
               type="password"
               name="password"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               所属グループ
             </label>
-            <select
+            <Select
               name="group_id"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white py-2 pl-3 pr-10 text-gray-900 cursor-pointer"
-              required
             >
-              {groups.map((group) => (
-                <option key={group.group_id} value={group.group_id}>
-                  {group.group_name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="グループを選択してください" />
+              </SelectTrigger>
+              <SelectContent>
+                {groups.map((group) => (
+                  <SelectItem key={group.group_id} value={group.group_name}>
+                    {group.group_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -115,4 +112,4 @@ export default async function CreateUserPage() {
       </form>
     </div>
   );
-} 
+}
