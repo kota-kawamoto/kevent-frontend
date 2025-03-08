@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { userSchema, type UserFormData } from './schema';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface User {
   id: string;
@@ -81,10 +83,8 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             氏名
           </label>
-          <input
+          <Input
             {...register('name')}
-            type="text"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.name && (
             <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -95,10 +95,8 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
           <label htmlFor="login_id" className="block text-sm font-medium text-gray-700">
             ログインID
           </label>
-          <input
+          <Input
             {...register('login_id')}
-            type="text"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.login_id && (
             <p className="mt-1 text-sm text-red-600">{errors.login_id.message}</p>
@@ -109,17 +107,23 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
           <label htmlFor="group_id" className="block text-sm font-medium text-gray-700">
             所属グループ
           </label>
-          <select
-            {...register('group_id')}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white py-2 pl-3 pr-10 text-gray-900 cursor-pointer"
+          <Select
+            defaultValue={user.group_name}
+            onValueChange={(value) => {
+              register('group_id').onChange({ target: { value } });
+            }}
           >
-            <option value="">グループを選択してください</option>
-            {groups.map((group) => (
-              <option key={group.group_id} value={group.group_id}>
-                {group.group_name}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue defaultValue={user.group_name} />
+            </SelectTrigger>
+            <SelectContent>
+              {groups.map((group) => (
+                <SelectItem key={group.group_id} value={group.group_name}>
+                  {group.group_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {errors.group_id && (
             <p className="mt-1 text-sm text-red-600">{errors.group_id.message}</p>
           )}
