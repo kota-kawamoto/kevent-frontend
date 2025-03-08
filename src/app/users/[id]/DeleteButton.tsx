@@ -16,7 +16,7 @@ export function DeleteButton({ userId }: DeleteButtonProps) {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/${userId}/delete`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Accept': 'application/json',
@@ -27,7 +27,7 @@ export function DeleteButton({ userId }: DeleteButtonProps) {
         throw new Error(`HTTP error status: ${response.status}`);
       }
 
-      router.push('/user')
+      router.push('/users')
     } catch (e) {
       console.error('Error deleting user:', e);
       alert('ユーザーの削除に失敗');

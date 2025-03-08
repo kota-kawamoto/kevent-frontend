@@ -12,7 +12,7 @@ export default async function CreateUserPage() {
     'use server';
 
     try {
-      const response = await fetch(`${process.env.API_URL}/api/user`, {
+      const response = await fetch(`${process.env.API_URL}/api/users`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -33,7 +33,7 @@ export default async function CreateUserPage() {
       if (!response.ok) {
         throw new Error(data.message || `エラーが発生しました (${response.status})`);
       }
-      redirect('/user');
+      redirect('/users');
 
     } catch (error) {
       console.error('作成エラー:', error);
@@ -103,7 +103,7 @@ export default async function CreateUserPage() {
         </div>
 
         <div className="flex space-x-4 mt-6 max-w-2xl mx-auto">
-          <Link href="/user">
+          <Link href="/users">
             <Button type="button" className="bg-gray-200 text-gray-800">
               キャンセル
             </Button>

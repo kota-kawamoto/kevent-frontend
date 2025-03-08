@@ -22,7 +22,7 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
   const { id } = await params;
 
   // ユーザー情報の取得
-  const response = await fetch(`${process.env.API_URL}/api/user/${id}`, {
+  const response = await fetch(`${process.env.API_URL}/api/users/${id}`, {
     method: 'GET',
     headers: {
       'Accept': 'application/json',

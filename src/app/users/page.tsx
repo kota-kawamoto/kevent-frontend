@@ -48,7 +48,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
       <div className="flex justify-center space-x-2 mt-4">
         {result.prev_page_url && (
           <Link
-            href={`/user?page=${currentPage - 1}`}
+            href={`/users?page=${currentPage - 1}`}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
           >
             前へ
@@ -62,7 +62,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
         .map((page) => (
           <Link
             key={page}
-            href={`/user?page=${page}`}
+            href={`/users?page=${page}`}
             className={`px-4 py-2 rounded ${
               currentPage === page
                 ? "bg-blue-700 text-white"
@@ -75,7 +75,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
 
         {result.next_page_url && (
           <Link
-            href={`/user?page=${currentPage + 1}`}
+            href={`/users?page=${currentPage + 1}`}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
           >
             次へ
@@ -103,12 +103,12 @@ export default async function UserListPage({ searchParams }: PageProps) {
               <td className="py-3 px-4">{user.user_name}</td>
               <td className="py-3 px-4">{user.group.group_name}</td>
               <td className="py-3 px-4 space-x-2">
-                <Link href={`/user/${user.user_id}`}>
+                <Link href={`/users/${user.user_id}`}>
                   <Button className="bg-blue-500 text-white hover:bg-blue-800">
                     詳細
                   </Button>
                 </Link>
-                <Link href={`/user/${user.user_id}/edit`}>
+                <Link href={`/users/${user.user_id}/edit`}>
                   <Button className="bg-green-500 text-white hover:bg-green-700">
                     編集
                   </Button>
@@ -119,7 +119,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
           ))}
         </tbody>
       </table>
-      <Link href="/user/create" className="mt-6 block">
+      <Link href="/users/create" className="mt-6 block">
         <Button className="bg-blue-500 text-white hover:bg-blue-800">新規ユーザ登録</Button>
       </Link>
       <Pagination />
