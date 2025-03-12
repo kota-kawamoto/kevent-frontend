@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from './DeleteButton';
 
 interface UserDetailPageProps {
   params: Promise<{ id: string }>;
@@ -14,7 +15,7 @@ interface User {
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id } = await params;
-    const response = await fetch(`${process.env.API_URL}/api/user/${id}`, {
+    const response = await fetch(`${process.env.API_URL}/api/users/${id}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -27,7 +28,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
       throw new Error(`HTTP error status: ${response.status}`);
     }
 
-    const user : User = await response.json();
+  const user: User = await response.json();
 
   return (
     <div className="container mx-auto p-4">
@@ -57,15 +58,13 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         </div>
       )}
       <div className="flex space-x-4 mt-6">
-        <Link href="/user">
+        <Link href="/users">
           <Button className="bg-gray-200 text-gray-800">一覧に戻る</Button>
         </Link>
-        <Link href={`/user/${user?.id}/edit`}>
+        <Link href={`/users/${user?.id}/edit`}>
           <Button className="bg-blue-500 text-white">編集</Button>
         </Link>
-        {/* <Link href='#' onClick={deleteUser}> */}
-          <Button className="bg-red-500 text-white">削除</Button>
-        {/* </Link> */}
+        <DeleteButton userId={user.id} />
       </div>
     </div>
   );
