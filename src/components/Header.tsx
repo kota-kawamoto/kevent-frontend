@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export function Header() {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
     <header className="bg-white shadow-md">
@@ -37,5 +37,5 @@ export function Header() {
         </ul>
       </nav>
     </header>
-  );
-} 
+  )
+}
