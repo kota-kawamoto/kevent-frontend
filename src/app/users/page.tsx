@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { DeleteButton } from './[id]/DeleteButton'
 
 interface User {
-  user_id: string
+  id: string
   user_name: string
   login_id: string
   group: {
@@ -104,22 +104,22 @@ export default async function UserListPage({ searchParams }: PageProps) {
         </thead>
         <tbody>
           {result.data.map((user) => (
-            <tr key={user.user_id} className="border-b hover:bg-gray-50">
-              <td className="py-3 px-4">{user.user_id}</td>
+            <tr key={user.id} className="border-b hover:bg-gray-50">
+              <td className="py-3 px-4">{user.id}</td>
               <td className="py-3 px-4">{user.user_name}</td>
               <td className="py-3 px-4">{user.group.group_name}</td>
               <td className="py-3 px-4 space-x-2">
-                <Link href={`/users/${user.user_id}`}>
+                <Link href={`/users/${user.id}`}>
                   <Button className="bg-blue-500 text-white hover:bg-blue-800">
                     詳細
                   </Button>
                 </Link>
-                <Link href={`/users/${user.user_id}/edit`}>
+                <Link href={`/users/${user.id}/edit`}>
                   <Button className="bg-green-500 text-white hover:bg-green-700">
                     編集
                   </Button>
                 </Link>
-                <DeleteButton userId={user.user_id} />
+                <DeleteButton userId={user.id} />
               </td>
             </tr>
           ))}

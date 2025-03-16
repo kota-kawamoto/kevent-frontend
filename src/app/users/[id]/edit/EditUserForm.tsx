@@ -24,7 +24,7 @@ interface User {
 }
 
 interface Group {
-  group_id: string
+  id: number
   group_name: string
 }
 
@@ -138,7 +138,7 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
             </SelectTrigger>
             <SelectContent>
               {groups.map((group) => (
-                <SelectItem key={group.group_id} value={group.group_name}>
+                <SelectItem key={group.id} value={group.group_name}>
                   {group.group_name}
                 </SelectItem>
               ))}

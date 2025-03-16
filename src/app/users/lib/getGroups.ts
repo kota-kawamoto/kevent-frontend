@@ -1,5 +1,5 @@
 interface Group {
-  group_id: string
+  id: number
   group_name: string
 }
 
