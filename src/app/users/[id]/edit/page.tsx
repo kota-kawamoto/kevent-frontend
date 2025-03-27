@@ -14,7 +14,7 @@ interface User {
 
 interface Group {
   id: string
-  group_name: string
+  roup_name: string
 }
 
 // ユーザー編集画面
