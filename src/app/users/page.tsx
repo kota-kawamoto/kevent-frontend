@@ -4,7 +4,6 @@ import { DeleteButton } from './[id]/DeleteButton'
 
 interface User {
   id: string
-  id: string
   user_name: string
   login_id: string
   group: {
