@@ -94,13 +94,16 @@ export default async function CreateUserPage() {
             <label className="block text-sm font-medium text-gray-700">
               所属グループ
             </label>
-            <Select name="group_id" required>
+            <Select name="group_id" defaultValue="">
               <SelectTrigger>
                 <SelectValue placeholder="グループを選択してください" />
               </SelectTrigger>
               <SelectContent>
                 {groups.map((group) => (
-                  <SelectItem key={group.id} value={String(group.id)}>
+                  <SelectItem
+                    key={group.id}
+                    value={group.id.toString()}
+                  >
                     {group.group_name}
                   </SelectItem>
                 ))}
