@@ -25,7 +25,6 @@ interface User {
 }
 
 interface Group {
-  id: number
   id: string
   group_name: string
 }
