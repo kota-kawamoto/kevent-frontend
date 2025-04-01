@@ -20,10 +20,8 @@ export function DeleteButton({ userId }: DeleteButtonProps) {
 
     try {
       const result = await deleteUser(userId)
-      if (result.success) {
-        router.push('/users')
-        router.refresh()
-      }
+      router.push('/users')
+      router.refresh()
     } catch (e) {
       setError(e instanceof Error ? e.message : '削除に失敗しました')
     }
