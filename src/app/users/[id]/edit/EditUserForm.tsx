@@ -43,7 +43,6 @@ interface ValidationErrors {
 // ユーザー編集画面のフォーム
 export function EditUserForm({ user, groups }: EditUserFormProps) {
   const router = useRouter()
-  const [groupId, setGroupId] = useState(user.group_id)
   const {
     register,
     handleSubmit,
@@ -131,23 +130,16 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
             所属グループ
           </label>
           <Select
-            value={groupId}
-            onValueChange={(value) => {
-              setGroupId(value)
-              setValue('group_id', value)
-            }}
+            name="group_id"
+            onValueChange={(value) => setValue('group_id', value)}
+            defaultValue={user.group_id.toString()}
           >
             <SelectTrigger className="w-full">
-              <SelectValue>
-                {groups.find(g => String(g.id) === String(groupId))?.group_name || 'グループを選択してください'}
-              </SelectValue>
+              <SelectValue placeholder="グループを選択してください" />
             </SelectTrigger>
             <SelectContent>
               {groups.map((group) => (
-                <SelectItem
-                  key={group.id}
-                  value={group.id}
-                >
+                <SelectItem key={group.id} value={group.id.toString()}>
                   {group.group_name}
                 </SelectItem>
               ))}
