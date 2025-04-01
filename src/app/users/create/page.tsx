@@ -11,6 +11,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+interface ValidationErrors {
+  errors: {
+    [key: string]: string[];
+  };
+  message: string;
+}
+
 // 新規ユーザー登録画面
 export default async function CreateUserPage() {
   // グループ一覧を取得
@@ -30,8 +37,8 @@ export default async function CreateUserPage() {
           user_name: formData.get('user_name'),
           login_id: formData.get('login_id'),
           password: formData.get('password'),
-          group_id: formData.get('group_id'),
-          type_id: formData.get('type_id'),
+          group_id: Number(formData.get('group_id')),
+          type_id: Number(formData.get('type_id')),
         }),
         cache: 'no-store',
       })
@@ -39,6 +46,13 @@ export default async function CreateUserPage() {
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 422) {
+          const validationErrors = data as ValidationErrors
+          const errorMessage = Object.values(validationErrors.errors)
+            .flat()
+            .join('\n')
+          throw new Error(errorMessage)
+        }
         throw new Error(
           data.message || `エラーが発生しました (${response.status})`
         )
@@ -62,31 +76,34 @@ export default async function CreateUserPage() {
             <label className="block text-sm font-medium text-gray-700">
               氏名
             </label>
-            <Input name="user_name" />
+            <Input name="user_name" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               ログインID
             </label>
-            <Input name="login_id" />
+            <Input name="login_id" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               パスワード
             </label>
-            <Input type="password" name="password" />
+            <Input type="password" name="password" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               所属グループ
             </label>
-            <Select name="group_id">
+            <Select name="group_id" defaultValue="">
               <SelectTrigger>
                 <SelectValue placeholder="グループを選択してください" />
               </SelectTrigger>
               <SelectContent>
                 {groups.map((group) => (
-                  <SelectItem key={group.group_id} value={group.group_name}>
+                  <SelectItem
+                    key={group.id}
+                    value={group.id.toString()}
+                  >
                     {group.group_name}
                   </SelectItem>
                 ))}

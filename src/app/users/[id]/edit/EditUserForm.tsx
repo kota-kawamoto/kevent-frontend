@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useState } from 'react'
 
 interface User {
   id: string
@@ -24,7 +25,7 @@ interface User {
 }
 
 interface Group {
-  group_id: string
+  id: string
   group_name: string
 }
 
@@ -42,9 +43,11 @@ interface ValidationErrors {
 // ユーザー編集画面のフォーム
 export function EditUserForm({ user, groups }: EditUserFormProps) {
   const router = useRouter()
+  const [groupId, setGroupId] = useState(user.group_id)
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<UserFormData>({
     resolver: yupResolver(userSchema),
@@ -128,17 +131,23 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
             所属グループ
           </label>
           <Select
-            defaultValue={user.group_name}
+            value={groupId}
             onValueChange={(value) => {
-              register('group_id').onChange({ target: { value } })
+              setGroupId(value)
+              setValue('group_id', value)
             }}
           >
-            <SelectTrigger>
-              <SelectValue defaultValue={user.group_name} />
+            <SelectTrigger className="w-full">
+              <SelectValue>
+                {groups.find(g => String(g.id) === String(groupId))?.group_name || 'グループを選択してください'}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {groups.map((group) => (
-                <SelectItem key={group.group_id} value={group.group_name}>
+                <SelectItem
+                  key={group.id}
+                  value={group.id}
+                >
                   {group.group_name}
                 </SelectItem>
               ))}

@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { DeleteButton } from './DeleteButton'
-import { useEffect } from 'react'
 
 interface UserDetailPageProps {
   params: Promise<{ id: string }>
