@@ -33,7 +33,9 @@ export default async function UserListPage({ searchParams }: PageProps) {
   const currentPage = Number(searchParams.page) || 1
 
   try {
-    const result: PaginatedResponse = await get(`/api/users?page=${currentPage}`)
+    const result: PaginatedResponse = await get(
+      `/api/users?page=${currentPage}`
+    )
 
     if (!result || !Array.isArray(result.data)) {
       throw new Error('Invalid API response format')
