@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { DeleteButton } from './[id]/DeleteButton'
+import { get, ApiError } from '@/lib/api'
+import { notFound } from 'next/navigation'
 
 interface User {
   id: string
@@ -31,25 +33,9 @@ export default async function UserListPage({ searchParams }: PageProps) {
   const currentPage = Number(searchParams.page) || 1
 
   try {
-    const response = await fetch(
-      `${process.env.API_URL}/api/users?page=${currentPage}`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
-    }
-
-    const result: PaginatedResponse = await response.json()
+    const result: PaginatedResponse = await get(`/api/users?page=${currentPage}`)
 
     if (!result || !Array.isArray(result.data)) {
-      console.error('Unexpected API response:', result)
       throw new Error('Invalid API response format')
     }
 
@@ -144,11 +130,15 @@ export default async function UserListPage({ searchParams }: PageProps) {
       </div>
     )
   } catch (error) {
-    console.error('Error fetching user list:', error)
-    return (
-      <div className="container mx-auto p-3">
-        <p>Error fetching user list. Please try again later.</p>
-      </div>
-    )
+    if (error instanceof ApiError) {
+      if (error.status === 404) {
+        console.error('APIエラー:', error.message)
+        console.error('APIエラー:', error.status)
+        console.error('APIエラー:', error.errors)
+        notFound()
+      }
+      throw error // 404以外のエラーはthrow
+    }
+    throw error // ApiError以外のエラーはthrow
   }
 }
