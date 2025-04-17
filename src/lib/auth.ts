@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import fetchApi from '@/lib/fetch'
 
@@ -15,17 +15,21 @@ interface LoginData {
   password: string
 }
 
-export const useAuth = () => {
+interface AuthContextType {
+  user: User | null
+  error: string | null
+  login: (data: LoginData) => Promise<void>
+  logout: () => Promise<void>
+  getUser: () => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
-  // ユーザー情報を管理
   const [user, setUser] = useState<User | null>(null)
-  // エラーを管理
   const [error, setError] = useState<string | null>(null)
 
-  // CSRFトークンを生成・返却→トークンベースの場合は不要
-  // createTokenで発行されるBearerTokenを使用するためCSRF保護もクッキー処理も不要になる
-
-  // ログインユーザー情報を取得
   const getUser = async () => {
     try {
       const response = await fetchApi('/api/user')
@@ -33,62 +37,63 @@ export const useAuth = () => {
         setUser(response.data)
       }
     } catch (error) {
-      console.error('ユーザー情報取得エラー:', error)
+      console.error('ユーザー取得失敗:', error)
       setUser(null)
     }
   }
 
-  // 初期化時にユーザー情報を取得
   useEffect(() => {
-    getUser()
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      getUser()
+    }
   }, [])
 
-  // ログイン処理
-  // サーバコンポーネントにした方が楽。切り分けてインポート。
   const login = async (data: LoginData) => {
     setError(null)
     try {
-      const response = await fetchApi('/api/auth/login', {
+      const response = await fetchApi('/api/login', {
         method: 'POST',
         body: JSON.stringify(data),
       })
 
       if ('data' in response) {
+        const token = response.data.token
+        if (token) {
+          localStorage.setItem('auth_token', token) // トークンを保存
+        }
+
         setUser(response.data.user)
-        router.push('/users')
+        router.push('/users') // ログイン後のリダイレクト
       }
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || 'ログインに失敗しました'
       setError(errorMessage)
-      throw new Error(errorMessage)
     }
   }
 
-  // ログアウト
-  // クッキーからトークンを削除した方がいいセキュリティの観点から
-  // サーバコンポーネントに切り分けた方が楽
   const logout = async () => {
-    setError(null)
     try {
+      const token = localStorage.getItem('auth_token')
       await fetchApi('/api/logout', {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
+      localStorage.removeItem('auth_token')
       setUser(null)
       router.push('/login')
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || 'ログアウトに失敗しました'
       setError(errorMessage)
-      throw new Error(errorMessage)
     }
   }
 
-  return {
-    user,
-    error,
-    login,
-    logout,
-    getUser,
-  }
+export const useAuthContext = () => {
+  const context = useContext(AuthContext)
+  if (!context) throw new Error('useAuthContext must be used within AuthProvider')
+  return context
 }
