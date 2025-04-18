@@ -9,6 +9,8 @@ export class ApiError extends Error {
   }
 }
 
+// セッション情報をサーバに送信できてない、クッキーには入っているが
+// クッキーの中の認証用トークンを取り出してAPI送信時にヘッダーに入れることをしないといけない
 export async function get(path: string) {
   const response = await fetch(`${process.env.API_URL}${path}`, {
     method: 'GET',
