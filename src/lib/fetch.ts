@@ -1,6 +1,6 @@
 'use server'
-// バックエンドのURL
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+
+import { cookies } from 'next/headers'
 
 // フェッチオプション
 interface FetchOptions extends RequestInit {
@@ -12,66 +12,65 @@ export const fetchApi = async (
   endpoint: string,
   options: FetchOptions = {}
 ) => {
-  // 第一引数：GETのクエリ用
-  // 第二引数：POSTのメソッド/ヘッダー/ボディ用
-  const { params, ...restOptions } = options
+  try {
+    // 第一引数：GETのクエリ用
+    // 第二引数：POSTのメソッド/ヘッダー/ボディ用
+    const { params, ...restOptions } = options
 
-  // URL作成
-  let url = `${BASE_URL}${endpoint}`
+    // URLを引数から設定
+    let url = endpoint
 
-  // クッキーから認証トークンを取得
-  const getAuthTokenFromCookie = (): string | null => {
-    // SSRでは実行されないためチェック
-    // ※クッキーはクライアントでしか取得できない
-    if (typeof window === 'undefined') return null
-    // windowはクライアントコンポーネントにしか存在しないもののため利用不可。クッキーはサーバでもNextなら取れる
+    // クッキーから認証トークンを取得
+    const cookieStore = await cookies()
+    const authToken = cookieStore.get('auth_token')?.value
 
-    if (typeof window === 'undefined') return null
-    // auth_tokenの値を取得(;が出てくるまでの文字列を取得)
-    const matches = document.cookie.match(/auth_token=([^;]+)/)
-    return matches ? matches[1] : null
-  }
-
-  const authToken = getAuthTokenFromCookie()
-
-  // デフォルトのオプションを設定
-  const defaultOptions: RequestInit = {
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest', // ajaxリクエストを送信するためのヘッダー
-      'Content-Type': 'application/json', // ボディの形式
-      // 認証トークンがあればBearerトークンを設定
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-    },
-  }
-
-  // オプションをマージ（ユーザー指定形式優先）
-  const mergedOptions = {
-    ...defaultOptions,
-    ...restOptions,
-    headers: {
-      ...defaultOptions.headers,
-      ...restOptions.headers,
-    },
-  }
-
-  // バックエンドにリクエストを送信
-  const response = await fetch(url, mergedOptions)
-
-  // レスポンスがJSONでない場合のエラーハンドリング
-  const contentType = response.headers.get('content-type')
-  if (contentType && contentType.includes('application/json')) {
-    const data = await response.json()
-    if (!response.ok) {
-      throw { response: { data } }
+    // デフォルトのオプションを設定
+    const defaultOptions: RequestInit = {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json',
+        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+      },
     }
-    return { data }
-  }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
-  }
+    // オプションをマージ
+    const mergedOptions = {
+      ...defaultOptions,
+      ...restOptions,
+      headers: {
+        ...defaultOptions.headers,
+        ...restOptions.headers,
+      },
+    }
 
-  return response
+    // バックエンドにリクエストを送信
+    const response = await fetch(url, mergedOptions).catch((err) => {
+      console.error('Fetch error:', err)
+      throw err
+    })
+
+    // レスポンスがJSONでない場合のエラーハンドリング
+    const contentType = response.headers.get('content-type')
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json()
+      if (!response.ok) {
+        console.error('API Error:', data)
+        throw { response: { data } }
+      }
+      return { data }
+    }
+
+    if (!response.ok) {
+      const data = await response.json()
+      console.error(data)
+      throw new Error(data)
+    }
+
+    return response
+  } catch (error) {
+    console.error('Fetch error:', error)
+    throw error
+  }
 }
 
 export default fetchApi

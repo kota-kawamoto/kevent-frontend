@@ -45,25 +45,6 @@ export const useAuth = () => {
 
   // ログイン処理
   // サーバコンポーネントにした方が楽。切り分けてインポート。
-  const login = async (data: LoginData) => {
-    setError(null)
-    try {
-      const response = await fetchApi('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-
-      if ('data' in response) {
-        setUser(response.data.user)
-        router.push('/users')
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || 'ログインに失敗しました'
-      setError(errorMessage)
-      throw new Error(errorMessage)
-    }
-  }
 
   // ログアウト
   // クッキーからトークンを削除した方がいいセキュリティの観点から
@@ -87,7 +68,6 @@ export const useAuth = () => {
   return {
     user,
     error,
-    login,
     logout,
     getUser,
   }

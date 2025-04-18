@@ -1,20 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuthContext } from '@/contexts/AuthContext'
+import { loginAction } from '@/app/actions/login'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
-  const { login, error } = useAuthContext()
   const [login_id, setLoginId] = useState('')
   const [password, setPassword] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await login({ login_id, password })
+      await loginAction({ login_id, password })
     } catch (error) {
       console.error('Login error:', error)
     }
@@ -57,12 +56,6 @@ export default function LoginPage() {
               />
             </div>
           </div>
-
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
 
           <div>
             <Button type="submit" className="w-full">
