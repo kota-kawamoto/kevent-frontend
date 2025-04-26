@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
+import { updateUser } from './action'
 
 interface User {
   id: string
@@ -59,31 +59,7 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
 
   const onSubmit = async (data: UserFormData) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        }
-      )
-
-      if (!response.ok) {
-        const errorData: ValidationErrors = await response.json()
-        if (errorData.errors) {
-          const errorMessages = Object.values(errorData.errors)
-            .flat()
-            .join('\n')
-          alert(errorMessages)
-        } else {
-          throw new Error(`HTTP error status: ${response.status}`)
-        }
-        return
-      }
-
+      await updateUser(user.id, data)
       router.push(`/users/${user.id}`)
     } catch (e) {
       console.error('Error updating user:', e)

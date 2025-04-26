@@ -1,4 +1,5 @@
 import { EditUserForm } from './EditUserForm'
+import { cookies } from 'next/headers'
 
 interface EditUserPageProps {
   params: Promise<{ id: string }>
@@ -20,6 +21,9 @@ interface Group {
 // ユーザー編集画面
 export default async function EditUserPage({ params }: EditUserPageProps) {
   const { id } = await params
+  // クッキーから認証トークンを取得
+  const cookieStore = cookies()
+  const authToken = (await cookieStore).get('auth_token')?.value
 
   // ユーザー情報の取得
   const response = await fetch(`${process.env.API_URL}/api/users/${id}`, {
@@ -27,6 +31,8 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      XRequestedWith: 'XMLHttpRequest',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
   })
 
@@ -40,6 +46,8 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      XRequestedWith: 'XMLHttpRequest',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
   })
 

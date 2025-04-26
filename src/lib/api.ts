@@ -41,22 +41,27 @@ async function request(method: Method, path: string, body?: object) {
   const response = await fetch(`${process.env.API_URL}${path}`, options)
 
   // レスポンス取得
-  const data = await response.json()
+  let data: any = null
+  const contentType = response.headers.get('content-type')
+
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json()
+  }
 
   // エラーハンドリング
   if (!response.ok) {
     if (response.status === 404) {
       throw new ApiError(
-        data.message || 'Not Found',
+        data?.message || 'Not Found',
         response.status,
-        data.errors
+        data?.errors
       )
     }
 
     throw new ApiError(
-      data.message || 'API Error',
+      data?.message || 'API Error',
       response.status,
-      data.errors
+      data?.errors
     )
   }
 
