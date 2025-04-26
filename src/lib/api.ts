@@ -1,3 +1,7 @@
+// use serverになるかどうか呼び出し元により変わる
+// .tsxは何も書かなかったらサーバコンポーネントになる
+// .tsファイルは何かから呼ばれることしかないから、呼び出し元に依存する
+import { cookies } from 'next/headers'
 export class ApiError extends Error {
   constructor(
     message: string, // エラーメッセージ
@@ -12,11 +16,15 @@ export class ApiError extends Error {
 // セッション情報をサーバに送信できてない、クッキーには入っているが
 // クッキーの中の認証用トークンを取り出してAPI送信時にヘッダーに入れることをしないといけない
 export async function get(path: string) {
+  const cookieStore = await cookies()
+  const authToken = cookieStore.get('auth_token')?.value
   const response = await fetch(`${process.env.API_URL}${path}`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      Authorization: `Bearer ${authToken}`,
     },
     cache: 'no-store',
   })

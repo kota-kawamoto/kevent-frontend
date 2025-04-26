@@ -2,7 +2,6 @@
 
 import { cookies } from 'next/headers'
 
-// フェッチオプション
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>
 }
@@ -16,13 +15,14 @@ export const fetchApi = async (
     // 第一引数：GETのクエリ用
     // 第二引数：POSTのメソッド/ヘッダー/ボディ用
     const { params, ...restOptions } = options
-
     // URLを引数から設定
     let url = endpoint
 
     // クッキーから認証トークンを取得
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')?.value
+
+    console.log('Auth Token:', authToken)
 
     // デフォルトのオプションを設定
     const defaultOptions: RequestInit = {
@@ -49,6 +49,8 @@ export const fetchApi = async (
       throw err
     })
 
+    console.log('Fetch response:', response)
+
     // レスポンスがJSONでない場合のエラーハンドリング
     const contentType = response.headers.get('content-type')
     if (contentType && contentType.includes('application/json')) {
@@ -61,9 +63,15 @@ export const fetchApi = async (
     }
 
     if (!response.ok) {
-      const data = await response.json()
-      console.error(data)
-      throw new Error(data)
+      try {
+        // const data = await response.json()
+        console.log(response.status)
+        // console.error('API Error Response:', data)
+        // throw new Error(data.message || 'Unknown error occurred')
+      } catch (err) {
+        console.error('Error parsing error response:', err)
+        throw new Error('Failed to fetch API')
+      }
     }
 
     return response

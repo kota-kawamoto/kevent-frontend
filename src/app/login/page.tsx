@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { loginAction } from '@/app/actions/login'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,13 +10,22 @@ import { Label } from '@/components/ui/label'
 export default function LoginPage() {
   const [login_id, setLoginId] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     try {
-      await loginAction({ login_id, password })
-    } catch (error) {
+      const result = await loginAction({ login_id, password })
+      if (result?.token) {
+        router.push('/')
+      } else {
+        setError('ログインに失敗しました')
+      }
+    } catch (error: any) {
       console.error('Login error:', error)
+      setError(error.message || 'ログインに失敗しました')
     }
   }
 
@@ -56,6 +66,8 @@ export default function LoginPage() {
               />
             </div>
           </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <div>
             <Button type="submit" className="w-full">

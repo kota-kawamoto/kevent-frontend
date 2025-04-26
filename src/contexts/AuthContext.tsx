@@ -7,6 +7,9 @@ import { useAuth } from '@/hooks/useAuth'
 const AuthContext = createContext<ReturnType<typeof useAuth> | undefined>(
   undefined
 )
+// コンテキストとは、アプリ全体で状態や関数をグローバルに共有するために使われる箱
+// ログイン状態やユーザー情報など。
+// コンテキストは箱、その箱に値を入れるのがプロバイダー
 
 // 認証状態をサイト全体で共有するためにプロバイダーを作成
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -18,6 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 // 認証情報を取得するためのカスタムフック
 export function useAuthContext() {
+  // AuthContextから認証状態を取得
+  // これのおかげでどのコンポーネントでもグローバルな認証状態が取れる
   const context = useContext(AuthContext)
   if (context === undefined) {
     throw new Error('useAuthContext must be used within an AuthProvider')

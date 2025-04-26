@@ -17,31 +17,11 @@ interface LoginData {
 
 export const useAuth = () => {
   const router = useRouter()
-  // ユーザー情報を管理
   const [user, setUser] = useState<User | null>(null)
-  // エラーを管理
   const [error, setError] = useState<string | null>(null)
 
   // CSRFトークンを生成・返却→トークンベースの場合は不要
   // createTokenで発行されるBearerTokenを使用するためCSRF保護もクッキー処理も不要になる
-
-  // ログインユーザー情報を取得
-  const getUser = async () => {
-    try {
-      const response = await fetchApi('/api/user')
-      if ('data' in response) {
-        setUser(response.data)
-      }
-    } catch (error) {
-      console.error('ユーザー情報取得エラー:', error)
-      setUser(null)
-    }
-  }
-
-  // 初期化時にユーザー情報を取得
-  useEffect(() => {
-    getUser()
-  }, [])
 
   // ログイン処理
   // サーバコンポーネントにした方が楽。切り分けてインポート。
@@ -69,6 +49,5 @@ export const useAuth = () => {
     user,
     error,
     logout,
-    getUser,
   }
 }

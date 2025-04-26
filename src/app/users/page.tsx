@@ -30,7 +30,8 @@ interface PageProps {
 }
 
 export default async function UserListPage({ searchParams }: PageProps) {
-  const currentPage = Number(searchParams.page) || 1
+  const params = await searchParams
+  const currentPage = Number(params.page || 1)
 
   try {
     const result: PaginatedResponse = await get(

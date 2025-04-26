@@ -1,4 +1,3 @@
-
 'use server'
 
 import { cookies } from 'next/headers'
@@ -11,19 +10,22 @@ interface LoginData {
 
 export async function loginAction(data: LoginData) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      body: JSON.stringify(data),
-    })
+    const response = await fetchApi(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify(data),
+      }
+    )
 
     if ('data' in response) {
       // サーバー側でセッションクッキーを設定
       if (response.data?.token) {
-        const cookieStore = cookies()
+        const cookieStore = await cookies()
         await cookieStore.set({
           name: 'auth_token',
           value: response.data.token,
@@ -37,7 +39,7 @@ export async function loginAction(data: LoginData) {
       return response.data
     }
 
-    throw new Error('ログインに失敗しました')
+    throw new Error(response.data || 'ログインに失敗しました')
   } catch (err: any) {
     console.error('Login error:', err)
     throw new Error(err.message || 'ログインに失敗しました')
