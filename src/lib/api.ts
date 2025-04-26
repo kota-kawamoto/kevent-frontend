@@ -13,127 +13,57 @@ export class ApiError extends Error {
   }
 }
 
-// GET
-export async function get(path: string) {
-  const cookieStore = await cookies()
-  const authToken = cookieStore.get('auth_token')?.value
-  const response = await fetch(`${process.env.API_URL}${path}`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-    },
-    cache: 'no-store',
-  })
+// API共通化
+type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
+async function request(method: Method, path: string, body?: object) {
+  // クッキーから認証トークンを取得
+  const cookieStore = cookies()
+  const authToken = (await cookieStore).get('auth_token')?.value
+
+  // デフォルトのヘッダーを設定
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    XRequestedWith: 'XMLHttpRequest',
+    ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+  }
+
+  // リクエストオプションを設定
+  const options: RequestInit = {
+    method,
+    headers,
+    cache: 'no-store',
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  }
+
+  // バックエンドにリクエストを送信
+  const response = await fetch(`${process.env.API_URL}${path}`, options)
+
+  // レスポンス取得
+  const data = await response.json()
+
+  // エラーハンドリング
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
     if (response.status === 404) {
-      throw new ApiError(error.message || 'リソースが見つかりません', 404)
+      throw new ApiError(
+        data.message || 'Not Found',
+        response.status,
+        data.errors
+      )
     }
+
     throw new ApiError(
-      error.message || `APIエラー (${response.status})`,
+      data.message || 'API Error',
       response.status,
-      error.errors
+      data.errors
     )
   }
 
-  return response.json()
+  return data
 }
 
-// POST
-export async function post(path: string, body: object) {
-  const cookieStore = await cookies()
-  const authToken = cookieStore.get('auth_token')?.value
-
-  const response = await fetch(`${process.env.API_URL}${path}`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-    },
-    body: JSON.stringify(body),
-    cache: 'no-store',
-  })
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    if (response.status === 404) {
-      throw new ApiError(error.message || 'リソースが見つかりません', 404)
-    }
-    throw new ApiError(
-      error.message || `APIエラー (${response.status})`,
-      response.status,
-      error.errors
-    )
-  }
-
-  return response.json()
-}
-
-// PUT
-export async function put(path: string, body: object) {
-  const cookieStore = await cookies()
-  const authToken = cookieStore.get('auth_token')?.value
-
-  const response = await fetch(`${process.env.API_URL}${path}`, {
-    method: 'PUT',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-    },
-    body: JSON.stringify(body),
-    cache: 'no-store',
-  })
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    if (response.status === 404) {
-      throw new ApiError(error.message || 'リソースが見つかりません', 404)
-    }
-    throw new ApiError(
-      error.message || `APIエラー (${response.status})`,
-      response.status,
-      error.errors
-    )
-  }
-
-  return response.json()
-}
-
-// DELETE
-export async function del(path: string) {
-  const cookieStore = await cookies()
-  const authToken = cookieStore.get('auth_token')?.value
-
-  const response = await fetch(`${process.env.API_URL}${path}`, {
-    method: 'DELETE',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-    },
-    cache: 'no-store',
-  })
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    if (response.status === 404) {
-      throw new ApiError(error.message || 'リソースが見つかりません', 404)
-    }
-    throw new ApiError(
-      error.message || `APIエラー (${response.status})`,
-      response.status,
-      error.errors
-    )
-  }
-
-  return response.json()
-}
+export const get = (path: string) => request('GET', path)
+export const post = (path: string, body: object) => request('POST', path, body)
+export const put = (path: string, body: object) => request('PUT', path, body)
+export const del = (path: string) => request('DELETE', path)
