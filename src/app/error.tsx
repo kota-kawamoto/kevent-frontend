@@ -34,6 +34,11 @@ export default function Error({
               ホームに戻る
             </Button>
           </Link>
+          <Link href="/login">
+            <Button className="bg-gray-500 text-white hover:bg-gray-700">
+              ログイン画面に戻る
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
