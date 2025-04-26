@@ -13,8 +13,7 @@ export class ApiError extends Error {
   }
 }
 
-// セッション情報をサーバに送信できてない、クッキーには入っているが
-// クッキーの中の認証用トークンを取り出してAPI送信時にヘッダーに入れることをしないといけない
+// GET
 export async function get(path: string) {
   const cookieStore = await cookies()
   const authToken = cookieStore.get('auth_token')?.value
@@ -24,7 +23,7 @@ export async function get(path: string) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
-      Authorization: `Bearer ${authToken}`,
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
     cache: 'no-store',
   })
@@ -44,12 +43,18 @@ export async function get(path: string) {
   return response.json()
 }
 
+// POST
 export async function post(path: string, body: object) {
+  const cookieStore = await cookies()
+  const authToken = cookieStore.get('auth_token')?.value
+
   const response = await fetch(`${process.env.API_URL}${path}`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
     body: JSON.stringify(body),
     cache: 'no-store',
@@ -70,12 +75,18 @@ export async function post(path: string, body: object) {
   return response.json()
 }
 
+// PUT
 export async function put(path: string, body: object) {
+  const cookieStore = await cookies()
+  const authToken = cookieStore.get('auth_token')?.value
+
   const response = await fetch(`${process.env.API_URL}${path}`, {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
     body: JSON.stringify(body),
     cache: 'no-store',
@@ -96,12 +107,18 @@ export async function put(path: string, body: object) {
   return response.json()
 }
 
+// DELETE
 export async function del(path: string) {
+  const cookieStore = await cookies()
+  const authToken = cookieStore.get('auth_token')?.value
+
   const response = await fetch(`${process.env.API_URL}${path}`, {
     method: 'DELETE',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
     cache: 'no-store',
   })
