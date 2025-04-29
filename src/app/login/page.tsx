@@ -1,31 +1,36 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { loginAction } from '@/app/actions/login'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
+import { loginSchema, type LoginFormData } from '@/app/login/schema'
 
 export default function LoginPage() {
-  const [login_id, setLoginId] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+  })
+
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      const result = await loginAction({ login_id, password })
+      const result = await loginAction(data)
       if (result?.token) {
         router.push('/')
       } else {
-        setError('ログインに失敗しました')
+        throw new Error('ログインに失敗しました')
       }
     } catch (error: any) {
       console.error('Login error:', error)
-      setError(error.message || 'ログインに失敗しました')
+      throw new Error('ログインに失敗しました')
     }
   }
 
@@ -38,36 +43,40 @@ export default function LoginPage() {
           </h2>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4 rounded-md">
             <div>
               <Label htmlFor="login_id">ログインID</Label>
               <Input
                 id="login_id"
-                name="login_id"
                 type="text"
                 required
-                value={login_id}
-                onChange={(e) => setLoginId(e.target.value)}
+                {...register('login_id')}
                 className="mt-1"
               />
+              {errors.login_id && (
+                <p className="text-red-500 text-sm">
+                  {errors.login_id.message}
+                </p>
+              )}
             </div>
 
             <div>
               <Label htmlFor="password">パスワード</Label>
               <Input
                 id="password"
-                name="password"
                 type="password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register('password')}
                 className="mt-1"
               />
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <div>
             <Button type="submit" className="w-full">
