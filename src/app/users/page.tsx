@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { DeleteButton } from './[id]/DeleteButton'
-import { get, ApiError } from '@/lib/api'
+import { get } from '@/lib/api'
+import { ApiError } from '@/lib/error'
 import { notFound } from 'next/navigation'
 
 interface User {

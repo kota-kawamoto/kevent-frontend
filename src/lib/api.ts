@@ -1,17 +1,8 @@
-// use serverになるかどうか呼び出し元により変わる
-// .tsxは何も書かなかったらサーバコンポーネントになる
-// .tsファイルは何かから呼ばれることしかないから、呼び出し元に依存する
+'use server'
+
 import { cookies } from 'next/headers'
-export class ApiError extends Error {
-  constructor(
-    message: string, // エラーメッセージ
-    public status: number, // ステータスコード
-    public errors?: Record<string, string[]> // エラー内容詳細（バリデーション等）
-  ) {
-    super(message) // エラーメッセージを親クラスに渡す
-    this.name = 'ApiError' // エラー名を設定→page.tsxでインスタンス生成エラー名を取得
-  }
-}
+import { redirect } from 'next/navigation'
+import { ApiError } from '@/lib/error'
 
 // API共通化
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
@@ -56,6 +47,8 @@ async function request(method: Method, path: string, body?: object) {
         response.status,
         data?.errors
       )
+    } else if (response.status === 401) {
+      redirect('/login')
     }
 
     throw new ApiError(
@@ -68,7 +61,9 @@ async function request(method: Method, path: string, body?: object) {
   return data
 }
 
-export const get = (path: string) => request('GET', path)
-export const post = (path: string, body: object) => request('POST', path, body)
-export const put = (path: string, body: object) => request('PUT', path, body)
-export const del = (path: string) => request('DELETE', path)
+export const get = async (path: string) => request('GET', path)
+export const post = async (path: string, body: object) =>
+  request('POST', path, body)
+export const put = async (path: string, body: object) =>
+  request('PUT', path, body)
+export const del = async (path: string) => request('DELETE', path)
