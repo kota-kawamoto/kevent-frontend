@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -30,6 +32,11 @@ export default function Error({
           <Link href="/">
             <Button className="bg-gray-500 text-white hover:bg-gray-700">
               ホームに戻る
+            </Button>
+          </Link>
+          <Link href="/login">
+            <Button className="bg-gray-500 text-white hover:bg-gray-700">
+              ログイン画面に戻る
             </Button>
           </Link>
         </div>

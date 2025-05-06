@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getGroups } from '../lib/getGroups'
 import { Input } from '@/components/ui/input'
+import { post } from '@/lib/api'
 import {
   Select,
   SelectContent,
@@ -13,9 +14,9 @@ import {
 
 interface ValidationErrors {
   errors: {
-    [key: string]: string[];
-  };
-  message: string;
+    [key: string]: string[]
+  }
+  message: string
 }
 
 // 新規ユーザー登録画面
@@ -27,36 +28,14 @@ export default async function CreateUserPage() {
     'use server'
 
     try {
-      const response = await fetch(`${process.env.API_URL}/api/users`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_name: formData.get('user_name'),
-          login_id: formData.get('login_id'),
-          password: formData.get('password'),
-          group_id: Number(formData.get('group_id')),
-          type_id: Number(formData.get('type_id')),
-        }),
-        cache: 'no-store',
+      const data = await post('/api/users', {
+        user_name: formData.get('user_name'),
+        login_id: formData.get('login_id'),
+        password: formData.get('password'),
+        group_id: Number(formData.get('group_id')),
+        type_id: Number(formData.get('type_id')),
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        if (response.status === 422) {
-          const validationErrors = data as ValidationErrors
-          const errorMessage = Object.values(validationErrors.errors)
-            .flat()
-            .join('\n')
-          throw new Error(errorMessage)
-        }
-        throw new Error(
-          data.message || `エラーが発生しました (${response.status})`
-        )
-      }
       redirect('/users')
     } catch (error) {
       console.error('作成エラー:', error)
@@ -100,10 +79,7 @@ export default async function CreateUserPage() {
               </SelectTrigger>
               <SelectContent>
                 {groups.map((group) => (
-                  <SelectItem
-                    key={group.id}
-                    value={group.id.toString()}
-                  >
+                  <SelectItem key={group.id} value={group.id.toString()}>
                     {group.group_name}
                   </SelectItem>
                 ))}

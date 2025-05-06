@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { DeleteButton } from './[id]/DeleteButton'
-import { get, ApiError } from '@/lib/api'
+import { get } from '@/lib/api'
+import { ApiError } from '@/lib/error'
 import { notFound } from 'next/navigation'
 
 interface User {
@@ -30,10 +31,13 @@ interface PageProps {
 }
 
 export default async function UserListPage({ searchParams }: PageProps) {
-  const currentPage = Number(searchParams.page) || 1
+  const params = await searchParams
+  const currentPage = Number(params.page || 1)
 
   try {
-    const result: PaginatedResponse = await get(`/api/users?page=${currentPage}`)
+    const result: PaginatedResponse = await get(
+      `/api/users?page=${currentPage}`
+    )
 
     if (!result || !Array.isArray(result.data)) {
       throw new Error('Invalid API response format')
