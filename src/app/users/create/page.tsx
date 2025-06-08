@@ -29,7 +29,7 @@ export default async function CreateUserPage() {
 
     try {
       const data = await post('/api/users', {
-        user_name: formData.get('user_name'),
+        name: formData.get('name'),
         login_id: formData.get('login_id'),
         password: formData.get('password'),
         group_id: Number(formData.get('group_id')),
@@ -55,7 +55,7 @@ export default async function CreateUserPage() {
             <label className="block text-sm font-medium text-gray-700">
               氏名
             </label>
-            <Input name="user_name" required />
+            <Input name="name" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
