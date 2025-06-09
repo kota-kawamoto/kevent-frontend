@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation'
 
 interface User {
   id: string
-  user_name: string
+  name: string
   login_id: string
   group: {
     group_name: string
@@ -106,7 +106,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
             {result.data.map((user) => (
               <tr key={user.id} className="border-b hover:bg-gray-50">
                 <td className="py-3 px-4">{user.id}</td>
-                <td className="py-3 px-4">{user.user_name}</td>
+                <td className="py-3 px-4">{user.name}</td>
                 <td className="py-3 px-4">{user.group.group_name}</td>
                 <td className="py-3 px-4 space-x-2">
                   <Link href={`/users/${user.id}`}>
