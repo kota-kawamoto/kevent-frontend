@@ -26,7 +26,7 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
   const authToken = (await cookieStore).get('auth_token')?.value
 
   // ユーザー情報の取得
-  const response = await fetch(`${process.env.API_URL}/api/users/${id}`, {
+  const response = await fetch(`${process.env.API_URL}/api/users/${id}/edit`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -40,25 +40,16 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
     throw new Error(`HTTP error status: ${response.status}`)
   }
 
-  // グループ一覧の取得
-  const groupsResponse = await fetch(`${process.env.API_URL}/api/groups`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      XRequestedWith: 'XMLHttpRequest',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-    },
-  })
+  // レスポンスデータを取得
+  const data = await response.json()
+  const user: User = data.user
+  const groups: Group[] = data.groups.map((group: any) => ({
+    id: group.id.toString(),
+    group_name: group.name,
+  }))
 
-  if (!groupsResponse.ok) {
-    throw new Error(`HTTP error status: ${groupsResponse.status}`)
-  }
-
-  // ユーザー情報
-  const user: User = await response.json()
-  // グループ一覧情報
-  const groups: Group[] = await groupsResponse.json()
+  console.log('User:', user)
+  console.log('Groups:', groups)
 
   return (
     <div className="container mx-auto p-4">
