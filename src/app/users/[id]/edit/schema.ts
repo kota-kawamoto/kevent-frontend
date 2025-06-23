@@ -15,6 +15,11 @@ export const userSchema = yup.object({
       'ログインIDは半角英数字、ハイフン、アンダースコアのみ使用できます'
     ),
   group_id: yup.string().required('所属グループは必須です'),
+  password: yup
+    .string()
+    .min(4, 'パスワードは4文字以上で入力してください')
+    .max(100, 'パスワードは100文字以内で入力してください')
+    .optional(),
 })
 
 export type UserFormData = yup.InferType<typeof userSchema>

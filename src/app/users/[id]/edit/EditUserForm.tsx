@@ -127,6 +127,25 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
             </p>
           )}
         </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            パスワード（変更する場合のみ入力）
+          </label>
+          <Input
+            type="password"
+            {...register('password')}
+            autoComplete="new-password"
+          />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex space-x-4 mt-6 max-w-2xl mx-auto">
