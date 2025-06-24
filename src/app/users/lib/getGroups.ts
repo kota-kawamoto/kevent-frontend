@@ -2,7 +2,7 @@ import { get } from '@/lib/api'
 
 interface Group {
   id: string
-  group_name: string
+  name: string
 }
 
 export async function getGroups(): Promise<Group[]> {

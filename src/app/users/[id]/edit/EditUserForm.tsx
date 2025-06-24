@@ -21,12 +21,11 @@ interface User {
   name: string
   login_id: string
   group_id: string
-  group_name: string
 }
 
 interface Group {
   id: string
-  group_name: string
+  name: string
 }
 
 interface EditUserFormProps {
@@ -116,7 +115,7 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
             <SelectContent>
               {groups.map((group) => (
                 <SelectItem key={group.id} value={group.id.toString()}>
-                  {group.group_name}
+                  {group.name}
                 </SelectItem>
               ))}
             </SelectContent>
