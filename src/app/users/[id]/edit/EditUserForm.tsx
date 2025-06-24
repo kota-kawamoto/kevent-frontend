@@ -21,12 +21,11 @@ interface User {
   name: string
   login_id: string
   group_id: string
-  group_name: string
 }
 
 interface Group {
   id: string
-  group_name: string
+  name: string
 }
 
 interface EditUserFormProps {
@@ -116,7 +115,7 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
             <SelectContent>
               {groups.map((group) => (
                 <SelectItem key={group.id} value={group.id.toString()}>
-                  {group.group_name}
+                  {group.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -124,6 +123,25 @@ export function EditUserForm({ user, groups }: EditUserFormProps) {
           {errors.group_id && (
             <p className="mt-1 text-sm text-red-600">
               {errors.group_id.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            パスワード（変更する場合のみ入力）
+          </label>
+          <Input
+            type="password"
+            {...register('password')}
+            autoComplete="new-password"
+          />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.password.message}
             </p>
           )}
         </div>
