@@ -17,9 +17,10 @@ export const userSchema = yup.object({
   group_id: yup.string().required('所属グループは必須です'),
   password: yup
     .string()
+    .transform((value) => (value === '' ? undefined : value))
     .min(4, 'パスワードは4文字以上で入力してください')
     .max(100, 'パスワードは100文字以内で入力してください')
-    .optional(),
+    .notRequired(),
 })
 
 export type UserFormData = yup.InferType<typeof userSchema>
